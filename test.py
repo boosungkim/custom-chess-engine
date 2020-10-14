@@ -1,7 +1,6 @@
-#
-# Testing area
-#
-from Board import Board
+list = [(0,0),(1,1)]
+print(list)
 
-bd = Board()
-bd.printBoard()
+list = list + [(2,2),(3,3)]
+
+print(list)
