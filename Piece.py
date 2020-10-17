@@ -2,7 +2,6 @@
 # The Chess piece classes
 #
 # TODO: add checking if check after moving suggested move later
-# TODO: Change the pawn based on the input from user
 
 # General chess piece
 from enums import Player
@@ -274,6 +273,8 @@ class Pawn(Piece):
             if game_state.is_valid_piece(current_square_row + 1, current_square_col + 1) and \
                     game_state.get_piece(current_square_row + 1, current_square_col + 1).is_player(Player.PLAYER_2):
                 _moves.append((current_square_row + 1, current_square_col + 1))
+            if game_state.can_en_passant(current_square_row, current_square_col):
+                _moves.append((current_square_row + 1, game_state.previous_piece_en_passant()[1]))
         # when the pawn is a black piece
         elif self.is_player(Player.PLAYER_2):
             # when the square right above is empty
@@ -293,6 +294,8 @@ class Pawn(Piece):
             if game_state.is_valid_piece(current_square_row - 1, current_square_col + 1) and \
                     game_state.get_piece(current_square_row - 1, current_square_col + 1).is_player(Player.PLAYER_1):
                 _moves.append((current_square_row - 1, current_square_col + 1))
+            if game_state.can_en_passant(current_square_row, current_square_col):
+                _moves.append((current_square_row - 1, game_state.previous_piece_en_passant()[1]))
         return _moves
 
 

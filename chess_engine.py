@@ -8,7 +8,7 @@ from Piece import Rook, Knight, Bishop, Queen, King, Pawn
 from enums import Player
 
 '''
-y \ x     0           1           2           3           4           5           6           7 
+r \ c     0           1           2           3           4           5           6           7 
 0   [(r=0, c=0), (r=0, c=1), (r=0, c=2), (r=0, c=3), (r=0, c=4), (r=0, c=5), (r=0, c=6), (r=0, c=7)]
 1   [(r=1, c=0), (r=1, c=1), (r=1, c=2), (r=1, c=3), (r=1, c=4), (r=1, c=5), (r=1, c=6), (r=1, c=7)]
 2   [(r=2, c=0), (r=2, c=1), (r=2, c=2), (r=2, c=3), (r=2, c=4), (r=2, c=5), (r=2, c=6), (r=2, c=7)]
@@ -31,6 +31,14 @@ class game_state:
         self.black_captives = []
         self.move_log = []
         self.white_turn = True
+        self.can_en_passant_bool = False
+        self._en_passant_previous = (-1, -1)
+
+        self._is_check = False
+        self._pins = []
+        self._checks = []
+        self._white_king_location = [0, 3]
+        self._black_king_location = [7, 3]
 
         self.white_king_can_castle = [True, True, True] #Has king not moved, has Rook1(col=0) not moved, has Rook2(col=7) not moved
         self.black_king_can_castle = [True, True, True]
@@ -64,8 +72,8 @@ class game_state:
         black_knight_2 = Knight('n', 7, 6, Player.PLAYER_2)
         black_bishop_1 = Bishop('b', 7, 2, Player.PLAYER_2)
         black_bishop_2 = Bishop('b', 7, 5, Player.PLAYER_2)
-        black_queen = Queen('q', 7, 3, Player.PLAYER_2)
-        black_king = King('k', 7, 4, Player.PLAYER_2)
+        black_queen = Queen('q', 7, 4, Player.PLAYER_2)
+        black_king = King('k', 7, 3, Player.PLAYER_2)
         black_pawn_1 = Pawn('p', 6, 0, Player.PLAYER_2)
         black_pawn_2 = Pawn('p', 6, 1, Player.PLAYER_2)
         black_pawn_3 = Pawn('p', 6, 2, Player.PLAYER_2)
@@ -124,9 +132,25 @@ class game_state:
             return self.black_king_can_castle[0] and self.black_king_can_castle[2] and \
                    self.get_piece(7, 6) is Player.EMPTY and self.get_piece(7, 5) is Player.EMPTY
 
-    def promotePawn(self, moved_piece):
-        new_piece = input("Change pawn to (r, q, n, b, q): ")
-        self.__init__(new_piece, self.get_row_number(), self.get_col_number(), player)
+    def promote_pawn(self, moved_piece):
+        running = True
+        while running:
+            new_piece_name = input("Change pawn to (r, n, b, q):\n")
+            piece_classes = {"r": Rook, "n": Knight, "b": Bishop, "q": Queen}
+            if new_piece_name in piece_classes:
+                new_piece_class = piece_classes[new_piece_name](new_piece_name, moved_piece.get_row_number(),
+                                                                moved_piece.get_col_number(), moved_piece.get_player())
+                self.board[moved_piece.get_row_number()][moved_piece.get_col_number()] = new_piece_class
+                running = False
+            else:
+                print("Please choose from these four: r, n, b, q.\n")
+
+    def can_en_passant(self, current_square_row, current_square_col):
+        return self.can_en_passant_bool and current_square_row == self.previous_piece_en_passant()[0] \
+               and abs(current_square_col - self.previous_piece_en_passant()[1]) == 1
+
+    def previous_piece_en_passant(self):
+        return self._en_passant_previous
 
     # Move a piece
     def move_piece(self, starting_square, ending_square, game_state):
@@ -144,7 +168,7 @@ class game_state:
 
             valid_moves = moving_piece.get_valid_piece_moves(game_state, starting_square)
 
-            if (next_square_row, next_square_col) in valid_moves:
+            if ending_square in valid_moves:
                 moved_to_piece = self.get_piece(next_square_row, next_square_col)
                 if moving_piece.get_name() is "k":
                     if moving_piece.is_player(Player.PLAYER_1):
@@ -188,6 +212,7 @@ class game_state:
                             self.black_king_can_castle[2] = False
                         else:
                             self.black_king_can_castle[0] = False
+                        self.can_en_passant_bool = False
                 elif moving_piece.get_name() is "r":
                     if moving_piece.is_player(Player.PLAYER_1) and current_square_col == 0:
                         self.white_king_can_castle[1] = False
@@ -197,6 +222,22 @@ class game_state:
                         self.white_king_can_castle[1] = False
                     elif moving_piece.is_player(Player.PLAYER_2) and current_square_col == 7:
                         self.white_king_can_castle[2] = False
+                    self.can_en_passant_bool = False
+                elif moving_piece.get_name() is "p":
+                    if moving_piece.is_player(Player.PLAYER_1) and next_square_row == 7:
+                        game_state.promote_pawn(moving_piece)
+                    elif moving_piece.is_player(Player.PLAYER_2) and next_square_row == 0:
+                        game_state.promote_pawn(moving_piece)
+                    elif abs(next_square_row - current_square_row) == 2 and current_square_col == next_square_col:
+                        self.can_en_passant_bool = True
+                        self._en_passant_previous = (next_square_row, next_square_col)
+                    elif abs(next_square_row - current_square_row) == 1 and abs(current_square_col - next_square_col) == 1:
+                        if moving_piece.is_player(Player.PLAYER_1):
+                            game_state.board[next_square_row - 1][next_square_col] = Player.EMPTY
+                        else:
+                            game_state.board[next_square_row + 1][next_square_col] = Player.EMPTY
+                else:
+                    self.can_en_passant_bool = False
 
                 moving_piece.change_row_number(next_square_row)
                 moving_piece.change_col_number(next_square_col)
@@ -207,17 +248,23 @@ class game_state:
                 self.move_log.append(chess_move(starting_square, ending_square, game_state))
                 self.white_turn = not self.white_turn
 
-                if moving_piece.get_name() is "p":
-                    if moving_piece.is_player(Player.PLAYER_1) and next_square_row == 7:
-                        pass
             else:
                 pass
 
     # true if white, false if black
     def whose_turn(self):
         return self.white_turn
-
-    def is_check(self):
+    '''
+    check for immediate check
+    - check 8 directions and 8 knight squares
+    check for pins
+    - whatever blocked from above is a pin
+    
+     - if immediate check, change check value to true
+     - list valid moves to prevent check but not remove pin
+     - if there are no valid moves to prevent check, checkmate
+    '''
+    def check_for_check(self, game_state, player):
         pass
 
 

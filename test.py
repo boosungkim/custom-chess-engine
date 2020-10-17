@@ -1,6 +1,7 @@
-list = [(0,0),(1,1)]
-print(list)
+i = 1
 
-list = list + [(2,2),(3,3)]
-
-print(list)
+while True:
+    print(i)
+    i += 1
+    if i == 10:
+        break
