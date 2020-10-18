@@ -110,12 +110,12 @@ def main():
                         player_clicks = []
                     else:
                         game_state.move_piece((player_clicks[0][0], player_clicks[0][1]),
-                                              (player_clicks[1][0], player_clicks[1][1]), game_state)
+                                              (player_clicks[1][0], player_clicks[1][1]))
                         square_selected = ()
                         player_clicks = []
                         valid_moves = []
                 else:
-                    valid_moves = game_state.get_valid_moves(game_state, row, col)
+                    valid_moves = game_state.get_valid_moves((row, col))
 
         draw_game_state(screen, game_state, valid_moves, square_selected)
         clock.tick(MAX_FPS)
