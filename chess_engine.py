@@ -167,8 +167,8 @@ class game_state:
                             can_move = False
                     if can_move:
                         valid_moves.append(move)
-                if not valid_moves:
-                    self.checkmate = True
+                # if not valid_moves:
+                #     self.checkmate = True
 
             # pinned checks
             elif pinned_pieces:
@@ -186,8 +186,8 @@ class game_state:
                             valid_moves.append(move)
                         self.board[current_row][current_col] = moving_piece
                         self.board[move[0]][move[1]] = temp
-                if not valid_moves:
-                    self.stalemate = True
+                # if not valid_moves:
+                #     self.stalemate = True
 
             else:
                 if moving_piece.get_name() is "k":
@@ -203,8 +203,14 @@ class game_state:
                 else:
                     for move in initial_valid_piece_moves:
                         valid_moves.append(move)
-                if not valid_moves:
+            if not valid_moves:
+                if self._is_check:
+                    self.checkmate = True
+                else:
                     self.stalemate = True
+            else:
+                self.checkmate = False
+                self.stalemate = False
             return valid_moves
         else:
             return None

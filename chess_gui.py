@@ -11,12 +11,13 @@ import pygame as py
 from enums import Player
 
 """Variables"""
-WIDTH = HEIGHT = 512            # width and height of the chess board
-DIMENSION = 8                   # the dimensions of the chess board
-SQ_SIZE = HEIGHT // DIMENSION   # the size of each of the squares in the board
-MAX_FPS = 15                    # FPS for animations
-IMAGES = {}                     # images for the chess pieces
+WIDTH = HEIGHT = 512  # width and height of the chess board
+DIMENSION = 8  # the dimensions of the chess board
+SQ_SIZE = HEIGHT // DIMENSION  # the size of each of the squares in the board
+MAX_FPS = 15  # FPS for animations
+IMAGES = {}  # images for the chess pieces
 colors = [py.Color("white"), py.Color("gray")]
+
 
 def load_images():
     '''
@@ -46,7 +47,7 @@ def draw_squares(screen):
     for r in range(DIMENSION):
         for c in range(DIMENSION):
             color = colors[(r + c) % 2]
-            py.draw.rect(screen, color, py.Rect(c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
+            py.draw.rect(screen, color, py.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE))
 
 
 def draw_pieces(screen, game_state):
@@ -57,9 +58,11 @@ def draw_pieces(screen, game_state):
     '''
     for r in range(DIMENSION):
         for c in range(DIMENSION):
-            piece = game_state.get_piece(r,c)
+            piece = game_state.get_piece(r, c)
             if piece is not None and piece != Player.EMPTY:
-                screen.blit(IMAGES[piece.get_player() + "_" + piece.get_name()], py.Rect(c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
+                screen.blit(IMAGES[piece.get_player() + "_" + piece.get_name()],
+                            py.Rect(c * SQ_SIZE, r * SQ_SIZE, SQ_SIZE, SQ_SIZE))
+
 
 def highlight_square(screen, game_state, valid_moves, square_selected):
     if square_selected != () and game_state.is_valid_piece(square_selected[0], square_selected[1]):
@@ -72,13 +75,14 @@ def highlight_square(screen, game_state, valid_moves, square_selected):
             s = py.Surface((SQ_SIZE, SQ_SIZE))
             s.set_alpha(100)
             s.fill(py.Color("blue"))
-            screen.blit(s, (col*SQ_SIZE, row*SQ_SIZE))
+            screen.blit(s, (col * SQ_SIZE, row * SQ_SIZE))
 
             # highlight move squares
             s.fill(py.Color("green"))
 
             for move in valid_moves:
-                screen.blit(s, (move[1]*SQ_SIZE,  move[0]*SQ_SIZE))
+                screen.blit(s, (move[1] * SQ_SIZE, move[0] * SQ_SIZE))
+
 
 def main():
     py.init()
@@ -87,50 +91,68 @@ def main():
     game_state = chess_engine.game_state()
     load_images()
     running = True
-    square_selected = ()                        # keeps track of the last selected square
-    player_clicks = []                          # keeps track of player clicks (two tuples)
+    square_selected = ()  # keeps track of the last selected square
+    player_clicks = []  # keeps track of player clicks (two tuples)
     valid_moves = []
+    game_over = False
     while running:
         for e in py.event.get():
             if e.type == py.QUIT:
                 running = False
             elif e.type == py.MOUSEBUTTONDOWN:
-                location = py.mouse.get_pos()
-                col = location[0]//SQ_SIZE
-                row = location[1]//SQ_SIZE
-                if square_selected == (row, col):
-                    square_selected = ()
-                    player_clicks = []
-                else:
-                    square_selected = (row, col)
-                    player_clicks.append(square_selected)
-                if len(player_clicks) == 2:
-                    # this if is useless right now
-                    if not game_state.is_valid_piece(player_clicks[0][0], player_clicks[0][1]):
+                if not game_over:
+                    location = py.mouse.get_pos()
+                    col = location[0] // SQ_SIZE
+                    row = location[1] // SQ_SIZE
+                    if square_selected == (row, col):
                         square_selected = ()
                         player_clicks = []
                     else:
-                        game_state.move_piece((player_clicks[0][0], player_clicks[0][1]),
-                                              (player_clicks[1][0], player_clicks[1][1]))
-                        square_selected = ()
-                        player_clicks = []
-                        valid_moves = []
-                else:
-                    valid_moves = game_state.get_valid_moves((row, col))
+                        square_selected = (row, col)
+                        player_clicks.append(square_selected)
+                    if len(player_clicks) == 2:
+                        # this if is useless right now
+                        if not game_state.is_valid_piece(player_clicks[0][0], player_clicks[0][1]):
+                            square_selected = ()
+                            player_clicks = []
+                        else:
+                            game_state.move_piece((player_clicks[0][0], player_clicks[0][1]),
+                                                  (player_clicks[1][0], player_clicks[1][1]))
+                            square_selected = ()
+                            player_clicks = []
+                            valid_moves = []
+                    else:
+                        valid_moves = game_state.get_valid_moves((row, col))
             elif e.type == py.KEYDOWN:
                 if e.key == py.K_r:
                     game_state = chess_engine.game_state()
                     valid_moves = []
                     square_selected = ()
-                    player_clicks = [] 
+                    player_clicks = []
                     valid_moves = []
 
-        if game_state.checkmate:
-            print("Checkmate!")
-
         draw_game_state(screen, game_state, valid_moves, square_selected)
+
+        if game_state.checkmate:
+            game_over = True
+            if game_state.whose_turn():
+                draw_text(screen, "Black wins.")
+            else:
+                draw_text(screen, "White wins.")
+        elif game_state.stalemate:
+            game_over = True
+            draw_text(screen, "Stalemate.")
+
         clock.tick(MAX_FPS)
         py.display.flip()
+
+
+def draw_text(screen, text):
+    font = py.font.SysFont("Helvitca", 32, True, False)
+    text_object = font.render(text, 0, py.Color("Black"))
+    text_location = py.Rect(0, 0, WIDTH, HEIGHT).move(WIDTH / 2 - text_object.get_width() / 2,
+                                                      HEIGHT / 2 - text_object.get_height() / 2)
+    screen.blit(text_object, text_location)
 
 
 if __name__ == "__main__":
