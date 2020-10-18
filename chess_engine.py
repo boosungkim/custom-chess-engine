@@ -35,6 +35,8 @@ class game_state:
         self.white_turn = True
         self.can_en_passant_bool = False
         self._en_passant_previous = (-1, -1)
+        self.checkmate = False
+        self.stalemate = False
 
         self._is_check = False
         self._white_king_location = [0, 3]
@@ -111,7 +113,6 @@ class game_state:
         return (evaluated_piece is not None) and (evaluated_piece != Player.EMPTY)
 
     def get_valid_moves(self, starting_square):
-
         '''
         remove pins from valid moves (unless the pinned piece move can get rid of a check and checks is empty
         remove move from valid moves if the move falls within a check piece's valid move
@@ -134,10 +135,6 @@ class game_state:
             pinned_checks = group[2]
             initial_valid_piece_moves = moving_piece.get_valid_piece_moves(self)
 
-            print("here")
-            print(checking_pieces)
-            print("l")
-            print(pinned_pieces)
             # immediate check
             if checking_pieces:
                 for move in initial_valid_piece_moves:
@@ -170,6 +167,8 @@ class game_state:
                             can_move = False
                     if can_move:
                         valid_moves.append(move)
+                if not valid_moves:
+                    self.checkmate = True
 
             # pinned checks
             elif pinned_pieces:
@@ -187,6 +186,8 @@ class game_state:
                             valid_moves.append(move)
                         self.board[current_row][current_col] = moving_piece
                         self.board[move[0]][move[1]] = temp
+                if not valid_moves:
+                    self.stalemate = True
 
             else:
                 if moving_piece.get_name() is "k":
@@ -202,7 +203,8 @@ class game_state:
                 else:
                     for move in initial_valid_piece_moves:
                         valid_moves.append(move)
-
+                if not valid_moves:
+                    self.stalemate = True
             return valid_moves
         else:
             return None
