@@ -76,6 +76,7 @@ def highlight_square(screen, game_state, valid_moves, square_selected):
 
             # highlight move squares
             s.fill(py.Color("green"))
+
             for move in valid_moves:
                 screen.blit(s, (move[1]*SQ_SIZE,  move[0]*SQ_SIZE))
 
@@ -116,6 +117,16 @@ def main():
                         valid_moves = []
                 else:
                     valid_moves = game_state.get_valid_moves((row, col))
+            elif e.type == py.KEYDOWN:
+                if e.key == py.K_r:
+                    game_state = chess_engine.game_state()
+                    valid_moves = []
+                    square_selected = ()
+                    player_clicks = [] 
+                    valid_moves = []
+
+        if game_state.checkmate:
+            print("Checkmate!")
 
         draw_game_state(screen, game_state, valid_moves, square_selected)
         clock.tick(MAX_FPS)
