@@ -125,6 +125,7 @@ def main():
                         valid_moves = game_state.get_valid_moves((row, col))
             elif e.type == py.KEYDOWN:
                 if e.key == py.K_r:
+                    game_over = False
                     game_state = chess_engine.game_state()
                     valid_moves = []
                     square_selected = ()
