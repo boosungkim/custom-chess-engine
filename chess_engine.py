@@ -134,9 +134,10 @@ class game_state:
             pinned_checks = group[2]
             initial_valid_piece_moves = moving_piece.get_valid_piece_moves(self)
 
-            # print("here")
-            # print(pinned_pieces)
-            # print(pinned_checks)
+            print("here")
+            print(checking_pieces)
+            print("l")
+            print(pinned_pieces)
             # immediate check
             if checking_pieces:
                 for move in initial_valid_piece_moves:
@@ -187,10 +188,6 @@ class game_state:
                         self.board[current_row][current_col] = moving_piece
                         self.board[move[0]][move[1]] = temp
 
-                        # for piece in pinned_checks:
-                        #     if move == piece:
-                        #         # print("add")
-                        #         valid_moves.append(move)
             else:
                 if moving_piece.get_name() is "k":
                     for move in initial_valid_piece_moves:
@@ -398,7 +395,7 @@ class game_state:
                 if _possible_pin:
                     temp = self.board[_possible_pin[0]][_possible_pin[1]]
                     self.board[_possible_pin[0]][_possible_pin[1]] = Player.EMPTY
-                    if self.check_for_check(king_location, player)[0]:
+                    if (king_location_row, king_location_col) in self.get_piece(king_location_row, king_location_col - _left).get_valid_piece_takes(self):
                         _pins.append(_possible_pin)
                         _pins_check.append((king_location_row, king_location_col - _left))
                     self.board[_possible_pin[0]][_possible_pin[1]] = temp
@@ -424,7 +421,7 @@ class game_state:
                 if _possible_pin:
                     temp = self.board[_possible_pin[0]][_possible_pin[1]]
                     self.board[_possible_pin[0]][_possible_pin[1]] = Player.EMPTY
-                    if self.check_for_check(king_location, player)[0]:
+                    if (king_location_row, king_location_col) in self.get_piece(king_location_row, king_location_col + _right).get_valid_piece_takes(self):
                         _pins.append(_possible_pin)
                         _pins_check.append((king_location_row, king_location_col + _right))
                     self.board[_possible_pin[0]][_possible_pin[1]] = temp
@@ -450,7 +447,7 @@ class game_state:
                 if _possible_pin:
                     temp = self.board[_possible_pin[0]][_possible_pin[1]]
                     self.board[_possible_pin[0]][_possible_pin[1]] = Player.EMPTY
-                    if self.check_for_check(king_location, player)[0]:
+                    if (king_location_row, king_location_col) in self.get_piece(king_location_row + _down, king_location_col).get_valid_piece_takes(self):
                         _pins.append(_possible_pin)
                         _pins_check.append((king_location_row + _down, king_location_col))
                     self.board[_possible_pin[0]][_possible_pin[1]] = temp
@@ -477,7 +474,7 @@ class game_state:
                 if _possible_pin:
                     temp = self.board[_possible_pin[0]][_possible_pin[1]]
                     self.board[_possible_pin[0]][_possible_pin[1]] = Player.EMPTY
-                    if self.check_for_check(king_location, player)[0]:
+                    if (king_location_row, king_location_col) in self.get_piece(king_location_row - _up, king_location_col).get_valid_piece_takes(self):
                         _pins.append(_possible_pin)
                         _pins_check.append((king_location_row - _up, king_location_col))
                     self.board[_possible_pin[0]][_possible_pin[1]] = temp
@@ -487,6 +484,144 @@ class game_state:
                         _checks.append((king_location_row - _up, king_location_col))
                 break
             _up += 1
+
+        # left up
+        _up = 1
+        _left = 1
+        _possible_pin = ()
+        while king_location_col - _left >= 0 and king_location_row - _up >= 0 and \
+                self.get_piece(king_location_row - _up, king_location_col - _left) is not None:
+            if self.is_valid_piece(king_location_row - _up, king_location_col - _left) and \
+                    self.get_piece(king_location_row - _up, king_location_col - _left).is_player(player) and \
+                    self.get_piece(king_location_row - _up, king_location_col - _left).get_name() is not "k":
+                if not _possible_pin:
+                    _possible_pin = (king_location_row - _up, king_location_col - _left)
+                else:
+                    break
+            elif self.is_valid_piece(king_location_row - _up, king_location_col - _left) and \
+                    not self.get_piece(king_location_row - _up, king_location_col - _left).is_player(player):
+                if _possible_pin:
+                    temp = self.board[_possible_pin[0]][_possible_pin[1]]
+                    self.board[_possible_pin[0]][_possible_pin[1]] = Player.EMPTY
+                    if (king_location_row, king_location_col) in self.get_piece(king_location_row - _up, king_location_col - _left).get_valid_piece_takes(self):
+                        _pins.append(_possible_pin)
+                        _pins_check.append((king_location_row - _up, king_location_col - _left))
+                    self.board[_possible_pin[0]][_possible_pin[1]] = temp
+                else:
+                    if (king_location_row, king_location_col) in self.get_piece(king_location_row - _up,
+                                                                                king_location_col - _left).get_valid_piece_takes(self):
+                        self._is_check = True
+                        _checks.append((king_location_row - _up, king_location_col - _left))
+                break
+            _left += 1
+            _up += 1
+
+        # right up
+        _up = 1
+        _right = 1
+        _possible_pin = ()
+        while king_location_col + _right < 8 and king_location_row - _up >= 0 and \
+                self.get_piece(king_location_row - _up, king_location_col + _right) is not None:
+            if self.is_valid_piece(king_location_row - _up, king_location_col + _right) and \
+                    self.get_piece(king_location_row - _up, king_location_col + _right).is_player(player) and \
+                    self.get_piece(king_location_row - _up, king_location_col + _right).get_name() is not "k":
+                if not _possible_pin:
+                    _possible_pin = (king_location_row - _up, king_location_col + _right)
+                else:
+                    break
+            elif self.is_valid_piece(king_location_row - _up, king_location_col + _right) and \
+                    not self.get_piece(king_location_row - _up, king_location_col + _right).is_player(player):
+                if _possible_pin:
+                    temp = self.board[_possible_pin[0]][_possible_pin[1]]
+                    self.board[_possible_pin[0]][_possible_pin[1]] = Player.EMPTY
+                    if (king_location_row, king_location_col) in self.get_piece(king_location_row - _up,king_location_col + _right).get_valid_piece_takes(self):
+                        _pins.append(_possible_pin)
+                        _pins_check.append((king_location_row - _up, king_location_col + _right))
+                    self.board[_possible_pin[0]][_possible_pin[1]] = temp
+                else:
+                    if (king_location_row, king_location_col) in self.get_piece(king_location_row - _up,
+                                                                                king_location_col + _right).get_valid_piece_takes(
+                        self):
+                        self._is_check = True
+                        _checks.append((king_location_row - _up, king_location_col + _right))
+                break
+            _right += 1
+            _up += 1
+
+        # left down
+        _down = 1
+        _left = 1
+        _possible_pin = ()
+        while king_location_col - _left >= 0 and king_location_row + _down < 8 and \
+                self.get_piece(king_location_row + _down, king_location_col - _left) is not None:
+            if self.is_valid_piece(king_location_row + _down, king_location_col - _left) and \
+                    self.get_piece(king_location_row + _down, king_location_col - _left).is_player(player) and \
+                    self.get_piece(king_location_row + _down, king_location_col - _left).get_name() is not "k":
+                if not _possible_pin:
+                    _possible_pin = (king_location_row + _down, king_location_col - _left)
+                else:
+                    break
+            elif self.is_valid_piece(king_location_row + _down, king_location_col - _left) and \
+                    not self.get_piece(king_location_row + _down, king_location_col - _left).is_player(player):
+                if _possible_pin:
+                    temp = self.board[_possible_pin[0]][_possible_pin[1]]
+                    self.board[_possible_pin[0]][_possible_pin[1]] = Player.EMPTY
+                    if (king_location_row, king_location_col) in self.get_piece(king_location_row + _down,king_location_col- _left).get_valid_piece_takes(self):
+                        _pins.append(_possible_pin)
+                        _pins_check.append((king_location_row + _down, king_location_col - _left))
+                    self.board[_possible_pin[0]][_possible_pin[1]] = temp
+                else:
+                    if (king_location_row, king_location_col) in self.get_piece(king_location_row + _down,
+                                                                                king_location_col - _left).get_valid_piece_takes(
+                        self):
+                        self._is_check = True
+                        _checks.append((king_location_row + _down, king_location_col - _left))
+                break
+            _left += 1
+            _down += 1
+
+        # right down
+        _down = 1
+        _right = 1
+        _possible_pin = ()
+        while king_location_col + _right < 8 and king_location_row + _down < 8 and \
+                self.get_piece(king_location_row + _down, king_location_col + _right) is not None:
+            if self.is_valid_piece(king_location_row + _down, king_location_col + _right) and \
+                    self.get_piece(king_location_row + _down, king_location_col + _right).is_player(player) and \
+                    self.get_piece(king_location_row + _down, king_location_col + _right).get_name() is not "k":
+                if not _possible_pin:
+                    _possible_pin = (king_location_row + _down, king_location_col + _right)
+                else:
+                    break
+            elif self.is_valid_piece(king_location_row + _down, king_location_col + _right) and \
+                    not self.get_piece(king_location_row + _down, king_location_col + _right).is_player(player):
+                if _possible_pin:
+                    temp = self.board[_possible_pin[0]][_possible_pin[1]]
+                    self.board[_possible_pin[0]][_possible_pin[1]] = Player.EMPTY
+                    if (king_location_row, king_location_col) in self.get_piece(king_location_row + _down,king_location_col+_right).get_valid_piece_takes(self):
+                        _pins.append(_possible_pin)
+                        _pins_check.append((king_location_row + _down, king_location_col + _right))
+                    self.board[_possible_pin[0]][_possible_pin[1]] = temp
+                else:
+                    if (king_location_row, king_location_col) in self.get_piece(king_location_row + _down,
+                                                                                king_location_col + _right).get_valid_piece_takes(
+                        self):
+                        self._is_check = True
+                        _checks.append((king_location_row + _down, king_location_col + _right))
+                break
+            _right += 1
+            _down += 1
+
+        # knights
+        row_change = [-2, -2, -1, -1, +1, +1, +2, +2]
+        col_change = [-1, +1, -2, +2, -2, +2, +1, -1]
+        for i in range(0, 8):
+            if self.is_valid_piece(king_location_row + row_change[i], king_location_col + col_change[i]) and \
+                    not self.get_piece(king_location_row + row_change[i], king_location_col + col_change[i]).is_player(player):
+                if (king_location_row, king_location_col) in self.get_piece(king_location_row + row_change[i],
+                                                                            king_location_col + col_change[i]).get_valid_piece_takes(self):
+                    self._is_check = True
+                    _checks.append((king_location_row + row_change[i], king_location_col + col_change[i]))
 
         return [_checks, _pins, _pins_check]
 
