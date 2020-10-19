@@ -134,13 +134,23 @@ def main():
 
         draw_game_state(screen, game_state, valid_moves, square_selected)
 
-        if game_state.checkmate:
+        # if game_state.checkmate:
+        #     game_over = True
+        #     if game_state.whose_turn():
+        #         draw_text(screen, "Black wins.")
+        #     else:
+        #         draw_text(screen, "White wins.")
+        # elif game_state.stalemate:
+        #     game_over = True
+        #     draw_text(screen, "Stalemate.")
+        endgame = game_state.checkmate_stalemate_checker()
+        if endgame == 0:
             game_over = True
-            if game_state.whose_turn():
-                draw_text(screen, "Black wins.")
-            else:
-                draw_text(screen, "White wins.")
-        elif game_state.stalemate:
+            draw_text(screen, "Black wins.")
+        elif endgame == 1:
+            game_over = True
+            draw_text(screen, "White wins.")
+        elif endgame == 2:
             game_over = True
             draw_text(screen, "Stalemate.")
 

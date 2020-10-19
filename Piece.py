@@ -325,7 +325,6 @@ class Pawn(Piece):
                 _moves.append((self.get_row_number() - 1, self.get_col_number() + 1))
             if game_state.can_en_passant(self.get_row_number(), self.get_col_number()):
                 _moves.append((self.get_row_number() - 1, game_state.previous_piece_en_passant()[1]))
-                print(_moves)
         return _moves
 
     def get_valid_peaceful_moves(self, game_state):
@@ -418,20 +417,11 @@ class Queen(Rook, Bishop):
                 Bishop.get_valid_piece_takes(Bishop(self.get_name(), self.get_row_number(), self.get_col_number(), self.get_player()), game_state))
 
     def get_valid_piece_moves(self, game_state):
-        # return self.get_valid_peaceful_moves(game_state) + self.get_valid_piece_takes(game_state)
-        # _moves = []
-        # _moves = Rook.get_valid_piece_moves(Rook(self.get_name(), self.get_row_number(), self.get_col_number(), self.get_player()), game_state)
-        # Bishop.get_valid_piece_moves(Bishop(self.get_name(), self.get_row_number(), self.get_col_number(), self.get_player()), game_state))
-        # _moves = _moves + moves2
-
-        # print("overall")
-        # print(_moves)
         return (Rook.get_valid_piece_moves(Rook(self.get_name(), self.get_row_number(), self.get_col_number(), self.get_player()), game_state) +
                 Bishop.get_valid_piece_moves(Bishop(self.get_name(), self.get_row_number(), self.get_col_number(), self.get_player()), game_state))
 
 # King
 class King(Piece):
-
     def get_valid_piece_takes(self, game_state):
         _moves = []
         row_change = [-1, +0, +1, -1, +1, -1, +0, +1]
