@@ -209,7 +209,7 @@ class game_state:
         else:
             return None
 
-    # 0 if white lost, 1 if black lost, 2 if stalemate
+    # 0 if white lost, 1 if black lost, 2 if stalemate, 3 if not game over
     def checkmate_stalemate_checker(self):
         _all_valid_white_moves = []
         _all_valid_black_moves = []
@@ -225,6 +225,8 @@ class game_state:
             return 1
         elif not _all_valid_white_moves and not _all_valid_black_moves:
             return 2
+        else:
+            return 3
 
 
 

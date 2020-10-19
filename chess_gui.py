@@ -85,6 +85,12 @@ def highlight_square(screen, game_state, valid_moves, square_selected):
 
 
 def main():
+    # Check for the number of players and the color of the AI
+    number_of_players = input("How many players (1 or 2)?\n")
+    if number_of_players == 1:
+        human_player = input("What color do you want to play (w or b)?\n")
+    else:
+        pass
     py.init()
     screen = py.display.set_mode((WIDTH, HEIGHT))
     clock = py.time.Clock()
@@ -134,15 +140,6 @@ def main():
 
         draw_game_state(screen, game_state, valid_moves, square_selected)
 
-        # if game_state.checkmate:
-        #     game_over = True
-        #     if game_state.whose_turn():
-        #         draw_text(screen, "Black wins.")
-        #     else:
-        #         draw_text(screen, "White wins.")
-        # elif game_state.stalemate:
-        #     game_over = True
-        #     draw_text(screen, "Stalemate.")
         endgame = game_state.checkmate_stalemate_checker()
         if endgame == 0:
             game_over = True
