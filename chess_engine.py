@@ -212,7 +212,15 @@ class game_state:
 
     # 0 if white lost, 1 if black lost, 2 if stalemate, 3 if not game over
     def checkmate_stalemate_checker(self):
-        if self._is_check and self.whose_turn() and not self.get_all_legal_moves(Player.PLAYER_1)[1]:
+        # if self._is_check and self.whose_turn() and not self.get_all_legal_moves(Player.PLAYER_1)[1]:
+        #     return 0
+        # elif self._is_check and not self.whose_turn() and not self.get_all_legal_moves(Player.PLAYER_2)[1]:
+        #     return 1
+        # elif not self.get_all_legal_moves(Player.PLAYER_1) and not self.get_all_legal_moves(Player.PLAYER_2)[1]:
+        #     return 2
+        # else:
+        #     return 3
+        if self._is_check and self.whose_turn() and not self.get_all_legal_moves(Player.PLAYER_1):
             return 0
         elif self._is_check and not self.whose_turn() and not self.get_all_legal_moves(Player.PLAYER_2):
             return 1
@@ -222,14 +230,21 @@ class game_state:
             return 3
 
     def get_all_legal_moves(self, player):
-        _all_valid_moves = [[], []]
+        # _all_valid_moves = [[], []]
+        # for row in range(0, 8):
+        #     for col in range(0, 8):
+        #         if self.is_valid_piece(row, col) and self.get_piece(row, col).is_player(player):
+        #             valid_moves = self.get_valid_moves((row, col))
+        #             if valid_moves:
+        #                 _all_valid_moves[0].append((row, col))
+        #                 _all_valid_moves[1].append(valid_moves)
+        _all_valid_moves = []
         for row in range(0, 8):
             for col in range(0, 8):
                 if self.is_valid_piece(row, col) and self.get_piece(row, col).is_player(player):
                     valid_moves = self.get_valid_moves((row, col))
-                    if valid_moves:
-                        _all_valid_moves[0].append((row, col))
-                        _all_valid_moves[1].append(valid_moves)
+                    for move in valid_moves:
+                        _all_valid_moves.append(((row, col), move))
         return _all_valid_moves
 
 
