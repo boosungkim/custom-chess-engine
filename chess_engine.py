@@ -170,7 +170,7 @@ class game_state:
                         valid_moves.append(move)
                 self._is_check = True
             # pinned checks
-            elif pinned_pieces:
+            elif pinned_pieces and moving_piece.get_name() is not "k":
                 if starting_square not in pinned_pieces:
                     for move in initial_valid_piece_moves:
                         valid_moves.append(move)
