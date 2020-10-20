@@ -17,38 +17,44 @@ class chess_ai:
     def __init__(self):
         pass
 
-
     def minimax(self, game_state, depth, alpha, beta, maximizing_player, player_color):
         if depth == 0 or game_state.checkmate_stalemate_checker() != 3:
-            return [self.evaluate_board(game_state), None]
+            return self.evaluate_board(game_state)
         elif maximizing_player:
-            max_evaluation = [float('-inf'), None]
+            max_evaluation = float('-inf')
             all_possible_moves = game_state.get_all_legal_moves(player_color)
             for move_pair in all_possible_moves:
                 game_state.move_piece(move_pair[0], move_pair[1])
                 evaluation = self.minimax(game_state, depth - 1, alpha, beta, False, player_color)
                 game_state.move_piece(move_pair[1], move_pair[0])
-                if max_evaluation[0] < evaluation[0]:
-                    max_evaluation[1] = move_pair
-                max_evaluation[0] = max(evaluation[0], max_evaluation[0])
-                alpha = max(alpha, evaluation[0])
+                if max_evaluation < evaluation:
+                    max_evaluation = evaluation
+                    best_possible_move = move_pair
+                max_evaluation = max(evaluation, max_evaluation)
+                alpha = max(alpha, evaluation)
                 if beta <= alpha:
                     break
-                return max_evaluation
+            if depth == 3:
+                return best_possible_move
+            return max_evaluation
+
         else:
-            min_evaluation = [float('inf'), None]
+            min_evaluation = float('inf')
             all_possible_moves = game_state.get_all_legal_moves(player_color)
             for move_pair in all_possible_moves:
                 game_state.move_piece(move_pair[0], move_pair[1])
                 evaluation = self.minimax(game_state, depth - 1, alpha, beta, True, player_color)
                 game_state.move_piece(move_pair[1], move_pair[0])
-                if min_evaluation[0] > evaluation[0]:
-                    min_evaluation[1] = evaluation[1]
-                min_evaluation[0] = min(evaluation[0], min_evaluation[0])
-                beta = min(beta, evaluation[0])
+                if min_evaluation > evaluation:
+                    min_evaluation = evaluation
+                    best_possible_move = move_pair
+                min_evaluation = min(evaluation, min_evaluation)
+                beta = min(beta, evaluation)
                 if beta <= alpha:
                     break
-                return min_evaluation
+            if depth == 3:
+                return best_possible_move
+            return min_evaluation
 
 
     def evaluate_board(self, game_state):
