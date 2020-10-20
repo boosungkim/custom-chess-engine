@@ -24,6 +24,7 @@ r \ c     0           1           2           3           4           5         
 # TODO: Pawns are usually indicated by no letters
 # TODO: check/checkmate/stalemate
 # TODO: move logs
+# TODO: fix stalemate/checkmate for queen position
 class game_state:
     # Initialize 2D array to represent the chess board
     def __init__(self):
@@ -209,23 +210,27 @@ class game_state:
         else:
             return None
 
-    # 0 if white lost, 1 if black lost, 2 if stalemate
+    # 0 if white lost, 1 if black lost, 2 if stalemate, 3 if not game over
     def checkmate_stalemate_checker(self):
-        _all_valid_white_moves = []
-        _all_valid_black_moves = []
+        if self._is_check and self.whose_turn() and not self.get_all_legal_moves(Player.PLAYER_1)[1]:
+            return 0
+        elif self._is_check and not self.whose_turn() and not self.get_all_legal_moves(Player.PLAYER_2):
+            return 1
+        elif not self.get_all_legal_moves(Player.PLAYER_1) and not self.get_all_legal_moves(Player.PLAYER_2):
+            return 2
+        else:
+            return 3
+
+    def get_all_legal_moves(self, player):
+        _all_valid_moves = [[], []]
         for row in range(0, 8):
             for col in range(0, 8):
-                if self.is_valid_piece(row, col) and self.get_piece(row, col).is_player(Player.PLAYER_1):
-                    _all_valid_white_moves.extend(self.get_valid_moves((row, col)))
-                elif self.is_valid_piece(row, col) and self.get_piece(row, col).is_player(Player.PLAYER_2):
-                    _all_valid_black_moves.extend(self.get_valid_moves((row, col)))
-        if self._is_check and not _all_valid_white_moves and self.whose_turn():
-            return 0
-        elif self._is_check and not _all_valid_black_moves and not self.whose_turn():
-            return 1
-        elif not _all_valid_white_moves and not _all_valid_black_moves:
-            return 2
-
+                if self.is_valid_piece(row, col) and self.get_piece(row, col).is_player(player):
+                    valid_moves = self.get_valid_moves((row, col))
+                    if valid_moves:
+                        _all_valid_moves[0].append((row, col))
+                        _all_valid_moves[1].append(valid_moves)
+        return _all_valid_moves
 
 
 
