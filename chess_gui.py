@@ -8,7 +8,7 @@
 import chess_engine
 import pygame as py
 
-from chess_ai import chess_ai
+import ai_engine
 from enums import Player
 
 """Variables"""
@@ -87,7 +87,8 @@ def highlight_square(screen, game_state, valid_moves, square_selected):
 
 def main():
     # Check for the number of players and the color of the AI
-
+    number_of_player = 0
+    human_player = ""
     while True:
         try:
             number_of_players = input("How many players (1 or 2)?\n")
@@ -118,6 +119,7 @@ def main():
     player_clicks = []  # keeps track of player clicks (two tuples)
     valid_moves = []
     game_over = False
+
 
     if number_of_players == 2:
         while running:
@@ -172,6 +174,8 @@ def main():
             clock.tick(MAX_FPS)
             py.display.flip()
     elif human_player is 'w':
+        ai = ai_engine.chess_ai()
+        game_state = chess_engine.game_state()
         while running:
             for e in py.event.get():
                 if e.type == py.QUIT:
@@ -199,8 +203,8 @@ def main():
                                 player_clicks = []
                                 valid_moves = []
 
-                                ai_move = chess_ai.minimax(game_state, 3, float('-inf'), float('inf'), False)
-                                game_state.move_piece(ai_move[1])
+                                ai_move = ai.minimax(game_state, 100, float('-inf'), float('inf'), False, Player.PLAYER_2)
+                                game_state.move_piece(ai_move[1][0], ai_move[1][1])
                         else:
                             valid_moves = game_state.get_valid_moves((row, col))
                 elif e.type == py.KEYDOWN:
