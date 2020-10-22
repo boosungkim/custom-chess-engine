@@ -158,6 +158,9 @@ def main():
                         square_selected = ()
                         player_clicks = []
                         valid_moves = []
+                    elif e.key == py.K_u:
+                        game_state.undo_move()
+
             draw_game_state(screen, game_state, valid_moves, square_selected)
 
             endgame = game_state.checkmate_stalemate_checker()
