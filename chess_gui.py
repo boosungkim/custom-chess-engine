@@ -206,7 +206,7 @@ def main():
                                 player_clicks = []
                                 valid_moves = []
 
-                                ai_move = ai.minimax(game_state, 3, float('-inf'), float('inf'), False, Player.PLAYER_2)
+                                ai_move = ai.minimax(game_state, 3, -100000, 100000, True, Player.PLAYER_2)
                                 game_state.move_piece(ai_move[0], ai_move[1])
                         else:
                             valid_moves = game_state.get_valid_moves((row, col))
