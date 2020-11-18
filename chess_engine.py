@@ -267,12 +267,12 @@ class game_state:
             return self.black_king_can_castle[0] and self.black_king_can_castle[2] and \
                    self.get_piece(7, 6) is Player.EMPTY and self.get_piece(7, 5) is Player.EMPTY and not self._is_check
 
-    def promote_pawn(self, moved_piece, ending_square):
+    def promote_pawn(self, starting_square, moved_piece, ending_square):
         while True:
             new_piece_name = input("Change pawn to (r, n, b, q):\n")
             piece_classes = {"r": Rook, "n": Knight, "b": Bishop, "q": Queen}
             if new_piece_name in piece_classes:
-                move = chess_move(moved_piece.get_row_number(), moved_piece.get_col_number(), self)
+                move = chess_move(starting_square, ending_square, self)
 
                 new_piece = piece_classes[new_piece_name](new_piece_name, ending_square[0],
                                                           ending_square[1], moved_piece.get_player())
@@ -399,11 +399,11 @@ class game_state:
                 elif moving_piece.get_name() is "p":
                     # Promoting white pawn
                     if moving_piece.is_player(Player.PLAYER_1) and next_square_row == 7:
-                        self.promote_pawn(moving_piece, ending_square)
+                        self.promote_pawn(starting_square, moving_piece, ending_square)
                         temp = False
                     # Promoting black pawn
                     elif moving_piece.is_player(Player.PLAYER_2) and next_square_row == 0:
-                        self.promote_pawn(moving_piece, ending_square)
+                        self.promote_pawn(starting_square, moving_piece, ending_square)
                         temp = False
                     # Moving pawn forward by two
                     elif abs(next_square_row - current_square_row) == 2 and current_square_col == next_square_col:
