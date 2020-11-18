@@ -144,7 +144,7 @@ def main():
                                 player_clicks = []
                             else:
                                 game_state.move_piece((player_clicks[0][0], player_clicks[0][1]),
-                                                      (player_clicks[1][0], player_clicks[1][1]))
+                                                      (player_clicks[1][0], player_clicks[1][1]), False)
                                 square_selected = ()
                                 player_clicks = []
                                 valid_moves = []
@@ -201,13 +201,13 @@ def main():
                                 player_clicks = []
                             else:
                                 game_state.move_piece((player_clicks[0][0], player_clicks[0][1]),
-                                                      (player_clicks[1][0], player_clicks[1][1]))
+                                                      (player_clicks[1][0], player_clicks[1][1]), False)
                                 square_selected = ()
                                 player_clicks = []
                                 valid_moves = []
 
                                 ai_move = ai.minimax(game_state, 3, -100000, 100000, True, Player.PLAYER_2)
-                                game_state.move_piece(ai_move[0], ai_move[1])
+                                game_state.move_piece(ai_move[0], ai_move[1], True)
                         else:
                             valid_moves = game_state.get_valid_moves((row, col))
                 elif e.type == py.KEYDOWN:

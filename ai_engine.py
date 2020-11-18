@@ -20,7 +20,7 @@ class chess_ai:
             max_evaluation = -100000
             all_possible_moves = game_state.get_all_legal_moves("black")
             for move_pair in all_possible_moves:
-                game_state.move_piece(move_pair[0], move_pair[1])
+                game_state.move_piece(move_pair[0], move_pair[1], True)
                 evaluation = self.minimax(game_state, depth - 1, alpha, beta, False, "white")
                 a = game_state.undo_move()
                 if max_evaluation < evaluation:
@@ -38,7 +38,7 @@ class chess_ai:
             min_evaluation = 100000
             all_possible_moves = game_state.get_all_legal_moves("white")
             for move_pair in all_possible_moves:
-                game_state.move_piece(move_pair[0], move_pair[1])
+                game_state.move_piece(move_pair[0], move_pair[1], True)
                 evaluation = self.minimax(game_state, depth - 1, alpha, beta, True, "black")
                 b = game_state.undo_move()
                 if min_evaluation > evaluation:
