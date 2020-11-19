@@ -24,6 +24,7 @@ r \ c     0           1           2           3           4           5         
 # TODO: Pawns are usually indicated by no letters
 # TODO: stalemate
 # TODO: move logs - fix king castle boolean update
+# TODO: change move method argument about is_ai into something more elegant
 class game_state:
     # Initialize 2D array to represent the chess board
     def __init__(self):
@@ -286,6 +287,17 @@ class game_state:
             else:
                 print("Please choose from these four: r, n, b, q.\n")
 
+    def promote_pawn_ai(self, starting_square, moved_piece, ending_square):
+        move = chess_move(starting_square, ending_square, self)
+        # The ai can only promote the pawn to queen
+        new_piece = Queen("q", ending_square[0], ending_square[1], moved_piece.get_player())
+        self.board[ending_square[0]][ending_square[1]] = new_piece
+        self.board[moved_piece.get_row_number()][moved_piece.get_col_number()] = Player.EMPTY
+        moved_piece.change_row_number(ending_square[0])
+        moved_piece.change_col_number(ending_square[1])
+        move.pawn_promotion_move(new_piece)
+        self.move_log.append(move)
+
     def can_en_passant(self, current_square_row, current_square_col):
         return self.can_en_passant_bool and current_square_row == self.previous_piece_en_passant()[0] \
                and abs(current_square_col - self.previous_piece_en_passant()[1]) == 1
@@ -294,7 +306,7 @@ class game_state:
         return self._en_passant_previous
 
     # Move a piece
-    def move_piece(self, starting_square, ending_square):
+    def move_piece(self, starting_square, ending_square, is_ai):
         current_square_row = starting_square[0]  # The integer row value of the starting square
         current_square_col = starting_square[1]  # The integer col value of the starting square
         next_square_row = ending_square[0]  # The integer row value of the ending square
@@ -399,11 +411,17 @@ class game_state:
                 elif moving_piece.get_name() is "p":
                     # Promoting white pawn
                     if moving_piece.is_player(Player.PLAYER_1) and next_square_row == 7:
-                        self.promote_pawn(starting_square, moving_piece, ending_square)
+                        if is_ai:
+                            self.promote_pawn_ai(starting_square, moving_piece, ending_square)
+                        else:
+                            self.promote_pawn(starting_square, moving_piece, ending_square)
                         temp = False
                     # Promoting black pawn
                     elif moving_piece.is_player(Player.PLAYER_2) and next_square_row == 0:
-                        self.promote_pawn(starting_square, moving_piece, ending_square)
+                        if is_ai:
+                            self.promote_pawn_ai(starting_square, moving_piece, ending_square)
+                        else:
+                            self.promote_pawn(starting_square, moving_piece, ending_square)
                         temp = False
                     # Moving pawn forward by two
                     elif abs(next_square_row - current_square_row) == 2 and current_square_col == next_square_col:
