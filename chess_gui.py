@@ -19,7 +19,7 @@ MAX_FPS = 15  # FPS for animations
 IMAGES = {}  # images for the chess pieces
 colors = [py.Color("white"), py.Color("gray")]
 
-
+# TODO: AI black has been worked on. Mirror progress for other two modes
 def load_images():
     '''
     Load images for the chess pieces
@@ -179,6 +179,7 @@ def main():
     elif human_player is 'w':
         ai = ai_engine.chess_ai()
         game_state = chess_engine.game_state()
+        valid_moves = []
         while running:
             for e in py.event.get():
                 if e.type == py.QUIT:
@@ -194,9 +195,11 @@ def main():
                         else:
                             square_selected = (row, col)
                             player_clicks.append(square_selected)
+                            # valid_moves = game_state.get_valid_moves((row, col))
+
                         if len(player_clicks) == 2:
                             # this if is useless right now
-                            if not game_state.is_valid_piece(player_clicks[0][0], player_clicks[0][1]):
+                            if (player_clicks[1][0], player_clicks[1][1]) not in valid_moves:
                                 square_selected = ()
                                 player_clicks = []
                             else:
