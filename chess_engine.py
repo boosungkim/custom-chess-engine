@@ -298,9 +298,14 @@ class game_state:
         move.pawn_promotion_move(new_piece)
         self.move_log.append(move)
 
-    def can_en_passant(self, current_square_row, current_square_col):
-        return self.can_en_passant_bool and current_square_row == self.previous_piece_en_passant()[0] \
-               and abs(current_square_col - self.previous_piece_en_passant()[1]) == 1
+    # have to fix en passant for ai
+    def can_en_passant(self, current_square_row, current_square_col, is_ai):
+        return False
+        # if is_ai:
+        #     return False
+        # else:
+        #     return self.can_en_passant_bool and current_square_row == self.previous_piece_en_passant()[0] \
+        #            and abs(current_square_col - self.previous_piece_en_passant()[1]) == 1
 
     def previous_piece_en_passant(self):
         return self._en_passant_previous
@@ -435,8 +440,8 @@ class game_state:
                     # en passant
                     elif abs(next_square_row - current_square_row) == 1 and abs(
                             current_square_col - next_square_col) == 1 and \
-                            self.can_en_passant(current_square_row, current_square_col):
-                        print("en passant")
+                            self.can_en_passant(current_square_row, current_square_col, is_ai):
+                        # print("en passant")
                         if moving_piece.is_player(Player.PLAYER_1):
                             move = chess_move(starting_square, ending_square, self)
                             move.en_passant_move(self.board[next_square_row - 1][next_square_col],
