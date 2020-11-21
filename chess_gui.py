@@ -160,6 +160,7 @@ def main():
                         valid_moves = []
                     elif e.key == py.K_u:
                         game_state.undo_move()
+                        print(len(game_state.move_log))
 
             draw_game_state(screen, game_state, valid_moves, square_selected)
 
@@ -195,13 +196,12 @@ def main():
                         else:
                             square_selected = (row, col)
                             player_clicks.append(square_selected)
-                            # valid_moves = game_state.get_valid_moves((row, col))
 
                         if len(player_clicks) == 2:
-                            # this if is useless right now
                             if (player_clicks[1][0], player_clicks[1][1]) not in valid_moves:
                                 square_selected = ()
                                 player_clicks = []
+                                valid_moves = []
                             else:
                                 game_state.move_piece((player_clicks[0][0], player_clicks[0][1]),
                                                       (player_clicks[1][0], player_clicks[1][1]), False)
@@ -213,6 +213,8 @@ def main():
                                 game_state.move_piece(ai_move[0], ai_move[1], True)
                         else:
                             valid_moves = game_state.get_valid_moves((row, col))
+                            if valid_moves is None:
+                                valid_moves = []
                 elif e.type == py.KEYDOWN:
                     if e.key == py.K_r:
                         game_over = False

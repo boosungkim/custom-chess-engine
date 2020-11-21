@@ -25,6 +25,11 @@ class chess_ai:
             for move_pair in all_possible_moves:
                 game_state.move_piece(move_pair[0], move_pair[1], True)
                 evaluation = self.minimax(game_state, depth - 1, alpha, beta, False, "white")
+                # print("pair start")
+                # print(len(game_state.move_log))
+                # print(move_pair[0])
+                # print(move_pair[1])
+                # print("pair end")
                 game_state.undo_move()
 
                 # temp = game_state.board[move_pair[0][0]][move_pair[0][1]]

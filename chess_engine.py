@@ -411,6 +411,7 @@ class game_state:
                 elif moving_piece.get_name() is "p":
                     # Promoting white pawn
                     if moving_piece.is_player(Player.PLAYER_1) and next_square_row == 7:
+                        # print("promoting white pawn")
                         if is_ai:
                             self.promote_pawn_ai(starting_square, moving_piece, ending_square)
                         else:
@@ -418,20 +419,24 @@ class game_state:
                         temp = False
                     # Promoting black pawn
                     elif moving_piece.is_player(Player.PLAYER_2) and next_square_row == 0:
+                        # print("promoting black pawn")
                         if is_ai:
                             self.promote_pawn_ai(starting_square, moving_piece, ending_square)
                         else:
                             self.promote_pawn(starting_square, moving_piece, ending_square)
                         temp = False
                     # Moving pawn forward by two
+                    # Problem with Pawn en passant ai
                     elif abs(next_square_row - current_square_row) == 2 and current_square_col == next_square_col:
+                        # print("move pawn forward")
                         self.move_log.append(chess_move(starting_square, ending_square, self))
-                        self.can_en_passant_bool = True
+                        # self.can_en_passant_bool = True
                         self._en_passant_previous = (next_square_row, next_square_col)
                     # en passant
                     elif abs(next_square_row - current_square_row) == 1 and abs(
                             current_square_col - next_square_col) == 1 and \
                             self.can_en_passant(current_square_row, current_square_col):
+                        print("en passant")
                         if moving_piece.is_player(Player.PLAYER_1):
                             move = chess_move(starting_square, ending_square, self)
                             move.en_passant_move(self.board[next_square_row - 1][next_square_col],
@@ -519,6 +524,7 @@ class game_state:
 
                 self.board[undoing_move.en_passant_eaten_square[0]][
                     undoing_move.en_passant_eaten_square[1]] = undoing_move.en_passant_eaten_piece
+                self.can_en_passant_bool = True
             else:
                 self.board[undoing_move.starting_square_row][
                     undoing_move.starting_square_col] = undoing_move.moving_piece
