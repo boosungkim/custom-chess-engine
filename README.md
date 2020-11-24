@@ -1,7 +1,7 @@
 # Python Chess
 A GUI chess game including a simple AI, all written in Python. \
 <p align="center">
-<img src="demo-footage/chess-start.png" width="200"/>
+<img src="demo-footage/chess-start.png" width="400"/>
 </p>
 
 ## Index
@@ -19,6 +19,9 @@ This project includes a full chess engine, gui engine, and an AI engine. The AI 
 
 <a name="demo"></a>
 ## Demo
+| Human vs Human   | Human vs AI (AI is controlling black)  |
+|:----------------------|:------------------|
+|![](./demo-footage/chess-clip1.gif) | ![](./demo-footage/chess-clip2.gif) |
 
 <a name="usage"></a>
 ## Usage
@@ -45,7 +48,9 @@ pip install pygame
 
 <a name="credits"></a>
 ## Credits
-Other than the move log idea inspired by Eddie Sharick, the entirety of the chess engine was written by Boo Sung Kim. The GUI engine was largely inspired by Eddie Sharick, but the code was adapted to work with my chess engine. The AI engine was inspired by Sebastian Lague's pseudocode, which was also adapted to work with my other files. 
+The chess engine was written by Boo Sung Kim. The move log and the GUI engine code was inspired by Eddie Sharick and adapted by Boo Sung Kim. The AI engine was inspired by Sebastian Lague's pseudocode and implemented by Boo Sung Kim.
+
+Special thanks to Savid for helping me beta test the chess game many times.
 
 <a name="license"></a>
 ## License
