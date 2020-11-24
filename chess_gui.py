@@ -147,10 +147,6 @@ def main():
                             player_clicks = []
                             valid_moves = []
                         else:
-                            if human_player is 'b':
-                                ai_move = ai.minimax_black(game_state, 3, -100000, 100000, True, Player.PLAYER_1)
-                                game_state.move_piece(ai_move[0], ai_move[1], True)
-
                             game_state.move_piece((player_clicks[0][0], player_clicks[0][1]),
                                                   (player_clicks[1][0], player_clicks[1][1]), False)
                             square_selected = ()
@@ -159,6 +155,9 @@ def main():
 
                             if human_player is 'w':
                                 ai_move = ai.minimax_white(game_state, 3, -100000, 100000, True, Player.PLAYER_2)
+                                game_state.move_piece(ai_move[0], ai_move[1], True)
+                            elif human_player is 'b':
+                                ai_move = ai.minimax_black(game_state, 3, -100000, 100000, True, Player.PLAYER_1)
                                 game_state.move_piece(ai_move[0], ai_move[1], True)
                     else:
                         valid_moves = game_state.get_valid_moves((row, col))
