@@ -121,6 +121,10 @@ def main():
 
     ai = ai_engine.chess_ai()
     game_state = chess_engine.game_state()
+    if human_player is 'b':
+        ai_move = ai.minimax_black(game_state, 3, -100000, 100000, True, Player.PLAYER_1)
+        game_state.move_piece(ai_move[0], ai_move[1], True)
+
     while running:
         for e in py.event.get():
             if e.type == py.QUIT:
@@ -144,7 +148,7 @@ def main():
                             valid_moves = []
                         else:
                             if human_player is 'b':
-                                ai_move = ai.minimax(game_state, 3, -100000, 100000, True, Player.PLAYER_2)
+                                ai_move = ai.minimax_black(game_state, 3, -100000, 100000, True, Player.PLAYER_1)
                                 game_state.move_piece(ai_move[0], ai_move[1], True)
 
                             game_state.move_piece((player_clicks[0][0], player_clicks[0][1]),
@@ -154,7 +158,7 @@ def main():
                             valid_moves = []
 
                             if human_player is 'w':
-                                ai_move = ai.minimax(game_state, 3, -100000, 100000, True, Player.PLAYER_2)
+                                ai_move = ai.minimax_white(game_state, 3, -100000, 100000, True, Player.PLAYER_2)
                                 game_state.move_piece(ai_move[0], ai_move[1], True)
                     else:
                         valid_moves = game_state.get_valid_moves((row, col))
