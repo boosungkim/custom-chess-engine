@@ -217,19 +217,15 @@ class game_state:
 
     # 0 if white lost, 1 if black lost, 2 if stalemate, 3 if not game over
     def checkmate_stalemate_checker(self):
-        # if self._is_check and self.whose_turn() and not self.get_all_legal_moves(Player.PLAYER_1)[1]:
-        #     return 0
-        # elif self._is_check and not self.whose_turn() and not self.get_all_legal_moves(Player.PLAYER_2)[1]:
-        #     return 1
-        # elif not self.get_all_legal_moves(Player.PLAYER_1) and not self.get_all_legal_moves(Player.PLAYER_2)[1]:
-        #     return 2
-        # else:
-        #     return 3
-        if self._is_check and self.whose_turn() and not self.get_all_legal_moves(Player.PLAYER_1):
+        all_white_moves = self.get_all_legal_moves(Player.PLAYER_1)
+        all_black_moves = self.get_all_legal_moves(Player.PLAYER_2)
+        if self._is_check and self.whose_turn() and not all_white_moves:
+            print("white lost")
             return 0
-        elif self._is_check and not self.whose_turn() and not self.get_all_legal_moves(Player.PLAYER_2):
+        elif self._is_check and not self.whose_turn() and not all_black_moves:
+            print("black lost")
             return 1
-        elif not self.get_all_legal_moves(Player.PLAYER_1) and not self.get_all_legal_moves(Player.PLAYER_2):
+        elif not all_white_moves and not all_black_moves:
             return 2
         else:
             return 3
@@ -273,7 +269,7 @@ class game_state:
             new_piece_name = input("Change pawn to (r, n, b, q):\n")
             piece_classes = {"r": Rook, "n": Knight, "b": Bishop, "q": Queen}
             if new_piece_name in piece_classes:
-                move = chess_move(starting_square, ending_square, self)
+                move = chess_move(starting_square, ending_square, self, self._is_check)
 
                 new_piece = piece_classes[new_piece_name](new_piece_name, ending_square[0],
                                                           ending_square[1], moved_piece.get_player())
@@ -288,7 +284,7 @@ class game_state:
                 print("Please choose from these four: r, n, b, q.\n")
 
     def promote_pawn_ai(self, starting_square, moved_piece, ending_square):
-        move = chess_move(starting_square, ending_square, self)
+        move = chess_move(starting_square, ending_square, self, self._is_check)
         # The ai can only promote the pawn to queen
         new_piece = Queen("q", ending_square[0], ending_square[1], moved_piece.get_player())
         self.board[ending_square[0]][ending_square[1]] = new_piece
@@ -336,7 +332,7 @@ class game_state:
                     if moving_piece.is_player(Player.PLAYER_1):
                         if moved_to_piece == Player.EMPTY and next_square_col == 1 and self.king_can_castle_left(
                                 moving_piece.get_player()):
-                            move = chess_move(starting_square, ending_square, self)
+                            move = chess_move(starting_square, ending_square, self, self._is_check)
                             move.castling_move((0, 0), (0, 2), self)
                             self.move_log.append(move)
 
@@ -351,7 +347,7 @@ class game_state:
 
                         elif moved_to_piece == Player.EMPTY and next_square_col == 5 and self.king_can_castle_right(
                                 moving_piece.get_player()):
-                            move = chess_move(starting_square, ending_square, self)
+                            move = chess_move(starting_square, ending_square, self, self._is_check)
                             move.castling_move((0, 7), (0, 4), self)
                             self.move_log.append(move)
                             # move rook
@@ -363,14 +359,14 @@ class game_state:
                             self.white_king_can_castle[0] = False
                             self.white_king_can_castle[2] = False
                         else:
-                            move = chess_move(starting_square, ending_square, self)
+                            move = chess_move(starting_square, ending_square, self, self._is_check)
                             self.move_log.append(move)
                             self.white_king_can_castle[0] = False
                         self._white_king_location = (next_square_row, next_square_col)
                     else:
                         if moved_to_piece == Player.EMPTY and next_square_col == 1 and self.king_can_castle_left(
                                 moving_piece.get_player()):
-                            move = chess_move(starting_square, ending_square, self)
+                            move = chess_move(starting_square, ending_square, self, self._is_check)
                             move.castling_move((7, 0), (7, 2), self)
                             self.move_log.append(move)
 
@@ -383,7 +379,7 @@ class game_state:
                             self.black_king_can_castle[1] = False
                         elif moved_to_piece == Player.EMPTY and next_square_col == 5 and self.king_can_castle_right(
                                 moving_piece.get_player()):
-                            move = chess_move(starting_square, ending_square, self)
+                            move = chess_move(starting_square, ending_square, self, self._is_check)
                             move.castling_move((7, 7), (7, 4), self)
                             self.move_log.append(move)
 
@@ -396,7 +392,7 @@ class game_state:
                             self.black_king_can_castle[0] = False
                             self.black_king_can_castle[2] = False
                         else:
-                            move = chess_move(starting_square, ending_square, self)
+                            move = chess_move(starting_square, ending_square, self, self._is_check)
                             self.move_log.append(move)
                             self.black_king_can_castle[0] = False
                         self._black_king_location = (next_square_row, next_square_col)
@@ -410,7 +406,7 @@ class game_state:
                         self.white_king_can_castle[1] = False
                     elif moving_piece.is_player(Player.PLAYER_2) and current_square_col == 7:
                         self.white_king_can_castle[2] = False
-                    self.move_log.append(chess_move(starting_square, ending_square, self))
+                    self.move_log.append(chess_move(starting_square, ending_square, self, self._is_check))
                     self.can_en_passant_bool = False
                 # Add move class here
                 elif moving_piece.get_name() is "p":
@@ -434,7 +430,7 @@ class game_state:
                     # Problem with Pawn en passant ai
                     elif abs(next_square_row - current_square_row) == 2 and current_square_col == next_square_col:
                         # print("move pawn forward")
-                        self.move_log.append(chess_move(starting_square, ending_square, self))
+                        self.move_log.append(chess_move(starting_square, ending_square, self, self._is_check))
                         # self.can_en_passant_bool = True
                         self._en_passant_previous = (next_square_row, next_square_col)
                     # en passant
@@ -443,23 +439,23 @@ class game_state:
                             self.can_en_passant(current_square_row, current_square_col):
                         # print("en passant")
                         if moving_piece.is_player(Player.PLAYER_1):
-                            move = chess_move(starting_square, ending_square, self)
+                            move = chess_move(starting_square, ending_square, self, self._is_check)
                             move.en_passant_move(self.board[next_square_row - 1][next_square_col],
                                                  (next_square_row - 1, next_square_col))
                             self.move_log.append(move)
                             self.board[next_square_row - 1][next_square_col] = Player.EMPTY
                         else:
-                            move = chess_move(starting_square, ending_square, self)
+                            move = chess_move(starting_square, ending_square, self, self._is_check)
                             move.en_passant_move(self.board[next_square_row + 1][next_square_col],
                                                  (next_square_row + 1, next_square_col))
                             self.move_log.append(move)
                             self.board[next_square_row + 1][next_square_col] = Player.EMPTY
                     # moving forward by one or taking a piece
                     else:
-                        self.move_log.append(chess_move(starting_square, ending_square, self))
+                        self.move_log.append(chess_move(starting_square, ending_square, self, self._is_check))
                         self.can_en_passant_bool = False
                 else:
-                    self.move_log.append(chess_move(starting_square, ending_square, self))
+                    self.move_log.append(chess_move(starting_square, ending_square, self, self._is_check))
                     self.can_en_passant_bool = False
 
                 if temp:
@@ -546,6 +542,13 @@ class game_state:
                         undoing_move.ending_square_col)
 
             self.white_turn = not self.white_turn
+            # if undoing_move.in_check:
+            #     self._is_check = True
+            if undoing_move.moving_piece.get_name() is 'k' and undoing_move.moving_piece.get_player() is Player.PLAYER_1:
+                self._white_king_location = (undoing_move.starting_square_row, undoing_move.starting_square_col)
+            elif undoing_move.moving_piece.get_name() is 'k' and undoing_move.moving_piece.get_player() is Player.PLAYER_2:
+                self._black_king_location = (undoing_move.starting_square_row, undoing_move.starting_square_col)
+
             return undoing_move
         else:
             print("Back to the beginning!")
@@ -850,15 +853,16 @@ class game_state:
                                                                                 i]).get_valid_piece_takes(self):
                     # self._is_check = True
                     _checks.append((king_location_row + row_change[i], king_location_col + col_change[i]))
-
+        # print([_checks, _pins, _pins_check])
         return [_checks, _pins, _pins_check]
 
 
 class chess_move():
-    def __init__(self, starting_square, ending_square, game_state):
+    def __init__(self, starting_square, ending_square, game_state, in_check):
         self.starting_square_row = starting_square[0]
         self.starting_square_col = starting_square[1]
         self.moving_piece = game_state.get_piece(self.starting_square_row, self.starting_square_col)
+        self.in_check = in_check
 
         self.ending_square_row = ending_square[0]
         self.ending_square_col = ending_square[1]

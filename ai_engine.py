@@ -16,29 +16,33 @@ class chess_ai:
     evaluate board
     get the value of each piece
     '''
-    def minimax(self, game_state, depth, alpha, beta, maximizing_player, player_color):
-        if depth <= 0 or game_state.checkmate_stalemate_checker() != 3:
-            return self.evaluate_board(game_state)
+    def minimax_white(self, game_state, depth, alpha, beta, maximizing_player, player_color):
+        csc = game_state.checkmate_stalemate_checker()
         if maximizing_player:
-            max_evaluation = -100000
+            if csc == 0:
+                return 5000000
+            elif csc == 1:
+                return -5000000
+            elif csc == 2:
+                return 100
+        elif not maximizing_player:
+            if csc == 1:
+                return 5000000
+            elif csc == 0:
+                return -5000000
+            elif csc == 2:
+                return 100
+
+        if depth <= 0 or csc != 3:
+            return self.evaluate_board(game_state)
+
+        if maximizing_player:
+            max_evaluation = -10000000
             all_possible_moves = game_state.get_all_legal_moves("black")
             for move_pair in all_possible_moves:
                 game_state.move_piece(move_pair[0], move_pair[1], True)
-                evaluation = self.minimax(game_state, depth - 1, alpha, beta, False, "white")
-                # print("pair start")
-                # print(len(game_state.move_log))
-                # print(move_pair[0])
-                # print(move_pair[1])
-                # print("pair end")
+                evaluation = self.minimax_white(game_state, depth - 1, alpha, beta, False, "white")
                 game_state.undo_move()
-
-                # temp = game_state.board[move_pair[0][0]][move_pair[0][1]]
-                # temp2 = game_state.board[move_pair[1][0]][move_pair[1][1]]
-                # game_state.board[move_pair[0][0]][move_pair[0][1]] = Player.EMPTY
-                # game_state.board[move_pair[1][0]][move_pair[1][1]] = temp
-                # evaluation = self.minimax(game_state, depth - 1, alpha, beta, False, "white")
-                # game_state.board[move_pair[0][0]][move_pair[0][1]] = temp
-                # game_state.board[move_pair[1][0]][move_pair[1][1]] = temp2
 
                 if max_evaluation < evaluation:
                     max_evaluation = evaluation
@@ -51,20 +55,69 @@ class chess_ai:
             else:
                 return max_evaluation
         else:
-            min_evaluation = 100000
+            min_evaluation = 10000000
             all_possible_moves = game_state.get_all_legal_moves("white")
             for move_pair in all_possible_moves:
                 game_state.move_piece(move_pair[0], move_pair[1], True)
-                evaluation = self.minimax(game_state, depth - 1, alpha, beta, True, "black")
+                evaluation = self.minimax_white(game_state, depth - 1, alpha, beta, True, "black")
                 game_state.undo_move()
 
-                # temp = game_state.board[move_pair[0][0]][move_pair[0][1]]
-                # temp2 = game_state.board[move_pair[1][0]][move_pair[1][1]]
-                # game_state.board[move_pair[0][0]][move_pair[0][1]] = Player.EMPTY
-                # game_state.board[move_pair[1][0]][move_pair[1][1]] = temp
-                # evaluation = self.minimax(game_state, depth - 1, alpha, beta, True, "black")
-                # game_state.board[move_pair[0][0]][move_pair[0][1]] = temp
-                # game_state.board[move_pair[1][0]][move_pair[1][1]] = temp2
+                if min_evaluation > evaluation:
+                    min_evaluation = evaluation
+                    best_possible_move = move_pair
+                beta = min(beta, evaluation)
+                if beta <= alpha:
+                    break
+            if depth == 3:
+                return best_possible_move
+            else:
+                return min_evaluation
+
+    def minimax_black(self, game_state, depth, alpha, beta, maximizing_player, player_color):
+        csc = game_state.checkmate_stalemate_checker()
+        if maximizing_player:
+            if csc == 1:
+                return 5000000
+            elif csc == 0:
+                return -5000000
+            elif csc == 2:
+                return 100
+        elif not maximizing_player:
+            if csc == 0:
+                return 5000000
+            elif csc == 1:
+                return -5000000
+            elif csc == 2:
+                return 100
+
+        if depth <= 0 or csc != 3:
+            return self.evaluate_board(game_state)
+
+        if maximizing_player:
+            max_evaluation = -10000000
+            all_possible_moves = game_state.get_all_legal_moves("white")
+            for move_pair in all_possible_moves:
+                game_state.move_piece(move_pair[0], move_pair[1], True)
+                evaluation = self.minimax_black(game_state, depth - 1, alpha, beta, False, "black")
+                game_state.undo_move()
+
+                if max_evaluation < evaluation:
+                    max_evaluation = evaluation
+                    best_possible_move = move_pair
+                alpha = max(alpha, evaluation)
+                if beta <= alpha:
+                    break
+            if depth == 3:
+                return best_possible_move
+            else:
+                return max_evaluation
+        else:
+            min_evaluation = 10000000
+            all_possible_moves = game_state.get_all_legal_moves("black")
+            for move_pair in all_possible_moves:
+                game_state.move_piece(move_pair[0], move_pair[1], True)
+                evaluation = self.minimax_black(game_state, depth - 1, alpha, beta, True, "white")
+                game_state.undo_move()
 
                 if min_evaluation > evaluation:
                     min_evaluation = evaluation
