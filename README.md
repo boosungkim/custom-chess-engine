@@ -22,6 +22,8 @@ This project includes a full chess engine, gui engine, and an AI engine. The AI 
 | Human vs Human   | Human vs AI (AI is controlling black)  |
 |:----------------------|:------------------|
 |![](./demo-footage/chess-clip1.gif) | ![](./demo-footage/chess-clip2.gif) |
+[First full human vs human test run](https://www.youtube.com/watch?v=yuVbVM19GIY) \
+[First full human vs AI test run](https://www.youtube.com/watch?v=npUyYXWPDfI)
 
 <a name="usage"></a>
 ## Usage
