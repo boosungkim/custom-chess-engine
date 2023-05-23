@@ -1,5 +1,6 @@
-# Python Chess
-A GUI chess game including a simple AI, all written in Python.
+# Custom Chess Engine
+A chess engine written from scratch, including single player mode and multiplayer mode, written using Python. A C++ implementation is slowly in the works.
+
 <p align="center">
 <img src="demo-footage/chess-start.png" width="400"/>
 </p>
@@ -16,6 +17,7 @@ A GUI chess game including a simple AI, all written in Python.
 <a name="about"></a>
 ## About
 This project includes a full chess engine, gui engine, and an AI engine. The AI engine utilizes the minimax and alpha beta pruning algorithms.
+As mentioned, a C++ implementation is slowly in the works.
 
 <a name="demo"></a>
 ## Demo
