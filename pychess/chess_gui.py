@@ -82,7 +82,6 @@ def highlight_square(screen, game_state, valid_moves, square_selected):
             s.fill(py.Color("green"))
 
             for move in valid_moves:
-                print(move)
                 screen.blit(s, (move[1] * SQ_SIZE, move[0] * SQ_SIZE))
 
 
