@@ -8,7 +8,8 @@
 from rook import Rook
 from knight import Knight
 from bishop import Bishop
-from Pieces import Queen, King, Pawn
+from pawn import Pawn
+from Pieces import Queen, King
 from enums import Player
 
 '''
