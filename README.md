@@ -1,6 +1,8 @@
 # Custom Chess Engine
 A chess engine written from scratch, including single player mode and multiplayer mode, written using Python. A C++ implementation is slowly in the works.
 
+[![kandi X-Ray](https://kandi.openweaver.com/badges/xray.svg)](https://kandi.openweaver.com/python/boosungkim/python-chess) [![kandi Featured](https://kandi.openweaver.com/badges/featured.svg)](https://kandi.openweaver.com/collections/gaming/chess)
+
 <p align="center">
 <img src="demo-footage/chess-start.png" width="400"/>
 </p>
