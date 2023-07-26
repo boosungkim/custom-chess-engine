@@ -10,6 +10,7 @@ class Pawn(Piece):
         _piece_takes = []
 
         original_row_num, move_one_row, move_two_row = (1, 1, 2) if self.is_player(Player.PLAYER_1) else (6, -1, -2)
+        opposing_player = Player.PLAYER_1 if self.is_player(Player.PLAYER_2) else Player.PLAYER_2
 
         # when the square right below the starting_square is empty
         if game_state.get_piece(self.get_row_number() + move_one_row, self.get_col_number()) == Player.EMPTY:
@@ -21,11 +22,11 @@ class Pawn(Piece):
         
         # when the square to the bottom left of the starting_square has a black piece
         if game_state.is_valid_piece(self.get_row_number() + move_one_row, self.get_col_number() - 1) and \
-                game_state.get_piece(self.get_row_number() + move_one_row, self.get_col_number() - 1).is_player(Player.PLAYER_2):
+                game_state.get_piece(self.get_row_number() + move_one_row, self.get_col_number() - 1).is_player(opposing_player):
             _piece_takes.append((self.get_row_number() + move_one_row, self.get_col_number() - 1))
         # when the square to the bottom right of the starting_square has a black piece
         if game_state.is_valid_piece(self.get_row_number() + move_one_row, self.get_col_number() + 1) and \
-                game_state.get_piece(self.get_row_number() + move_one_row, self.get_col_number() + 1).is_player(Player.PLAYER_2):
+                game_state.get_piece(self.get_row_number() + move_one_row, self.get_col_number() + 1).is_player(opposing_player):
             _piece_takes.append((self.get_row_number() + move_one_row, self.get_col_number() + 1))
         # en passant (TODO: FIX)
         if game_state.can_en_passant(self.get_row_number(), self.get_col_number()):
