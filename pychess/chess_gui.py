@@ -19,6 +19,8 @@ MAX_FPS = 15  # FPS for animations
 IMAGES = {}  # images for the chess pieces
 colors = [py.Color("white"), py.Color("gray")]
 
+
+
 # TODO: AI black has been worked on. Mirror progress for other two modes
 def load_images():
     '''
@@ -83,6 +85,17 @@ def highlight_square(screen, game_state, valid_moves, square_selected):
 
             for move in valid_moves:
                 screen.blit(s, (move[1] * SQ_SIZE, move[0] * SQ_SIZE))
+
+def play():
+    SCREEN.fill("black")
+
+def options():
+    SCREEN.fill("black")
+
+# def menu():
+#     py.display.set_caption("Menu")
+
+#     while True:
 
 
 def main():

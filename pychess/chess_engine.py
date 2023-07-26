@@ -26,8 +26,6 @@ r \ c     0           1           2           3           4           5         
 '''
 
 
-# TODO: Flip the board according to the player
-# TODO: Pawns are usually indicated by no letters
 # TODO: stalemate
 # TODO: move logs - fix king castle boolean update
 # TODO: change move method argument about is_ai into something more elegant
@@ -35,22 +33,23 @@ class game_state:
     # Initialize 2D array to represent the chess board
     def __init__(self):
         # The board is a 2D array
-        # TODO: Change to a numpy format later
-        self.white_captives = []
-        self.black_captives = []
         self.move_log = []
         self.white_turn = True
+        self.valid_moves = {}
+
         self.can_en_passant_bool = False
         self._en_passant_previous = (-1, -1)
+
         self.checkmate = False
         self.stalemate = False
-
         self._is_check = False
+
+        # TODO: REMOVE THESE TWO LATER
         self._white_king_location = [0, 3]
         self._black_king_location = [7, 3]
 
-        self.white_king_can_castle = [True, True,
-                                      True]  # Has king not moved, has Rook1(col=0) not moved, has Rook2(col=7) not moved
+        # Has king not moved, has Rook1(col=0) not moved, has Rook2(col=7) not moved
+        self.white_king_can_castle = [True, True, True]  
         self.black_king_can_castle = [True, True, True]
 
         # Initialize White pieces
@@ -70,10 +69,6 @@ class game_state:
         white_pawn_6 = Pawn('p', 1, 5, Player.PLAYER_1)
         white_pawn_7 = Pawn('p', 1, 6, Player.PLAYER_1)
         white_pawn_8 = Pawn('p', 1, 7, Player.PLAYER_1)
-        self.white_pieces = [white_rook_1, white_rook_2, white_knight_1, white_knight_2, white_bishop_1, white_bishop_2,
-                             white_queen, white_king, white_pawn_1, white_pawn_2, white_pawn_3, white_pawn_4,
-                             white_pawn_5,
-                             white_pawn_6, white_pawn_7, white_pawn_8]
 
         # Initialize Black Pieces
         black_rook_1 = Rook('r', 7, 0, Player.PLAYER_2)
@@ -92,10 +87,6 @@ class game_state:
         black_pawn_6 = Pawn('p', 6, 5, Player.PLAYER_2)
         black_pawn_7 = Pawn('p', 6, 6, Player.PLAYER_2)
         black_pawn_8 = Pawn('p', 6, 7, Player.PLAYER_2)
-        self.black_pieces = [black_rook_1, black_rook_2, black_knight_1, black_knight_2, black_bishop_1, black_bishop_2,
-                             black_queen, black_king, black_pawn_1, black_pawn_2, black_pawn_3, black_pawn_4,
-                             black_pawn_5,
-                             black_pawn_6, black_pawn_7, black_pawn_8]
 
         self.board = [
             [white_rook_1, white_knight_1, white_bishop_1, white_king, white_queen, white_bishop_2, white_knight_2,
@@ -117,12 +108,14 @@ class game_state:
         ]
 
     def get_piece(self, row, col):
-        if (0 <= row < 8) and (0 <= col < 8):
+        if 0 <= row < 8 and 0 <= col < 8:
             return self.board[row][col]
+        else:
+            return None
 
     def is_valid_piece(self, row, col):
         evaluated_piece = self.get_piece(row, col)
-        return (evaluated_piece is not None) and (evaluated_piece != Player.EMPTY)
+        return evaluated_piece is not None and evaluated_piece != Player.EMPTY
 
     def get_valid_moves(self, starting_square):
         '''
