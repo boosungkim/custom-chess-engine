@@ -17,21 +17,17 @@ class chess_ai:
     get the value of each piece
     '''
     def minimax_white(self, game_state, depth, alpha, beta, maximizing_player, player_color):
+        csc_lookup = {
+            (True, 0): 5000000,
+            (True, 1): -5000000,
+            (True, 2): 100,
+            (False, 1): 5000000,
+            (False, 0): -5000000,
+            (False, 2): 100
+        }
         csc = game_state.checkmate_stalemate_checker()
-        if maximizing_player:
-            if csc == 0:
-                return 5000000
-            elif csc == 1:
-                return -5000000
-            elif csc == 2:
-                return 100
-        elif not maximizing_player:
-            if csc == 1:
-                return 5000000
-            elif csc == 0:
-                return -5000000
-            elif csc == 2:
-                return 100
+        if (maximizing_player, csc) in csc_lookup:
+            return csc_lookup[(maximizing_player, csc)]
 
         if depth <= 0 or csc != 3:
             return self.evaluate_board(game_state, Player.PLAYER_1)
@@ -74,21 +70,17 @@ class chess_ai:
                 return min_evaluation
 
     def minimax_black(self, game_state, depth, alpha, beta, maximizing_player, player_color):
+        csc_lookup = {
+            (True, 0): 5000000,
+            (True, 1): -5000000,
+            (True, 2): 100,
+            (False, 1): 5000000,
+            (False, 0): -5000000,
+            (False, 2): 100
+        }
         csc = game_state.checkmate_stalemate_checker()
-        if maximizing_player:
-            if csc == 1:
-                return 5000000
-            elif csc == 0:
-                return -5000000
-            elif csc == 2:
-                return 100
-        elif not maximizing_player:
-            if csc == 0:
-                return 5000000
-            elif csc == 1:
-                return -5000000
-            elif csc == 2:
-                return 100
+        if (maximizing_player, csc) in csc_lookup:
+            return csc_lookup[(maximizing_player, csc)]
 
         if depth <= 0 or csc != 3:
             return self.evaluate_board(game_state, Player.PLAYER_2)
@@ -129,6 +121,7 @@ class chess_ai:
                 return best_possible_move
             else:
                 return min_evaluation
+
 
     def evaluate_board(self, game_state, player):
         evaluation_score = 0
